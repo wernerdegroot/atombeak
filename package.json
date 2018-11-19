@@ -1,0 +1,28 @@
+{
+  "name": "atombeak",
+  "version": "0.0.3",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wernerdegroot/atombeak"
+  },
+  "scripts": {
+    "test": "npm run clean && tsc -p . --p tsconfig.test.json && jest --no-cache",
+    "coverage": "npm run clean && tsc -p . --p tsconfig.test.json && jest --no-cache --coverage",
+    "clean": "rm -rf dist coverage",
+    "tsc": "tsc",
+    "compile": "npm run clean && tsc -p .",
+    "prepublishOnly": "npm run test && npm run compile"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "^3.1.6",
+    "@types/jest": "^23.3.9",
+    "jest": "^23.6.0"
+  }
+}
