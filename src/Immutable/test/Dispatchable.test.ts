@@ -32,7 +32,7 @@ describe('Dispatchable', () => {
         listeners = listeners.filter(l => l !== listener)
       }
     }
-    const result = await Dispatchable.handle(dispatchable, () => outer, (newActions) => { actions = newActions }, subscriber)
+    const result = await dispatchable.handle(() => outer, (newActions) => { actions = newActions }, subscriber)
     expect(result.before).toEqual(4)
     expect(result.after).toEqual(8)
     expect(actions).toEqual([{ field: 'n', value: 8 }])
@@ -54,7 +54,7 @@ describe('Dispatchable', () => {
         listeners = listeners.filter(l => l !== listener)
       }
     }
-    const resultPromise = Dispatchable.handle(dispatchable, () => outer, (newActions) => { actions = newActions }, subscriber)
+    const resultPromise = dispatchable.handle(() => outer, (newActions) => { actions = newActions }, subscriber)
     setTimeout(() => {
       outer = { s: 'some string', n: 5 }
     }, 1000)
@@ -84,7 +84,7 @@ describe('Dispatchable', () => {
         listeners = listeners.filter(l => l !== listener)
       }
     }
-    const resultPromise = Dispatchable.handle(dispatchable, () => outer, (newActions) => { actions = newActions }, subscriber)
+    const resultPromise = dispatchable.handle(() => outer, (newActions) => { actions = newActions }, subscriber)
     setTimeout(() => {
       const oldOuter = outer
       outer = { s: 'some string', n: 3 }
