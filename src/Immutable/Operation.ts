@@ -3,6 +3,7 @@ import { PureOperation } from "./PureOperation";
 import { Result, retry } from "./Result";
 import { RetryOperation } from "./RetryOperation";
 import { AbstractLog } from "../AbstractLog";
+import { TimeoutOperation } from "./TimeoutOperation";
 
 export interface Operation<Outer, Inner, Action> {
   execute(outer: Outer, log: Log<Outer, Action>): Result<Outer, Inner, Action>
@@ -17,6 +18,9 @@ export const Operation = {
   },
   retry<Outer, Inner, Action>() {
     return new RetryOperation<Outer, Inner, Action>()
+  },
+  timeout<Outer, Action>(delay: number) {
+    return new TimeoutOperation<Outer, Action>(delay)
   },
   onChange<Outer, Inner, Action>(oldOuter: Outer, newOuter: Outer, operation: Operation<Outer, Inner, Action>, oldLog: Log<Outer, Action>) {
     if (AbstractLog.hasNotChanged(oldOuter, newOuter, oldLog)) {

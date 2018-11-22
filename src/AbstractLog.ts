@@ -45,7 +45,7 @@ export abstract class AbstractLog<Outer, Action> {
     const actions: Action[] = []
     this.itemsReversed.forEach(item => {
       if (item.type === WRITE) {
-        actions.push(item.action)
+        actions.unshift(item.action)
       }
     })
     return actions
