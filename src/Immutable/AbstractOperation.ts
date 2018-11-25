@@ -3,9 +3,10 @@ import { Log } from "./Log";
 import { MappedOperation } from "./internal";
 import { FlatMappedOperation } from "./internal";
 import { Result } from "./Result";
+import { Trampoline } from "./Trampoline";
 
 export abstract class AbstractOperation<Outer, Inner, Action> implements Operation<Outer, Inner, Action> {
-  abstract execute(outer: Outer, log: Log<Outer, Action>): Result<Outer, Inner, Action>
+  abstract execute(outer: Outer, log: Log<Outer, Action>): Trampoline<Outer, Inner, Action>
 
   map<NewInner>(fn: (inner: Inner) => NewInner): Operation<Outer, NewInner, Action> {
     return new MappedOperation(this, fn)

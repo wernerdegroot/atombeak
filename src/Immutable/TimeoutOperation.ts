@@ -1,6 +1,7 @@
 import { Log } from "./Log";
 import { AbstractOperation } from "./internal";
-import { Result, good } from "./Result";
+import { Trampoline, iter } from "./Trampoline";
+import { Operation } from "./Operation";
 
 export class TimeoutOperation<Outer, Action> extends AbstractOperation<Outer, null, Action> {
 
@@ -8,11 +9,13 @@ export class TimeoutOperation<Outer, Action> extends AbstractOperation<Outer, nu
     super()
   }
 
-  execute(outer: Outer, log: Log<Outer, never>): Result<Outer, null, Action> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(good(null, log))
-      }, this.delay)
-    })
+  execute(outer: Outer, log: Log<Outer, never>): Trampoline<Outer, null, Action> {
+    return iter(() => 
+      new Promise<[Operation<Outer, null, Action>, Log<Outer, Action>]>(resolve => {
+        setTimeout(() => {
+          resolve([Operation.pure(null), log])
+        }, this.delay)
+      })
+    )
   }
 }

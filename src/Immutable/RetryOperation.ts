@@ -1,10 +1,11 @@
 import { Operation } from "./Operation";
 import { Log } from "./Log";
 import { Result, retry } from "./Result";
+import { Trampoline, done } from "./Trampoline";
 
 export class RetryOperation<Outer, Inner, Action> implements Operation<Outer, Inner, Action> {
-  execute(outer: Outer, log: Log<Outer, Action>): Result<Outer, Inner, Action> {
-    return Promise.resolve(retry(log))
+  execute(outer: Outer, log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
+    return done(retry(log))
   }
 
   map<NewInner>(fn: (inner: Inner) => NewInner): Operation<Outer, NewInner, Action> {

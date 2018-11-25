@@ -1,4 +1,6 @@
 import { Retry, Good } from "../Result";
+import { Operation } from "../Operation";
+import { Log } from "../../Mutable";
 
 export const STATE_CHANGED = 'STATE_CHANGED'
 
@@ -13,6 +15,20 @@ export function stateChangedMessage<Outer>(oldOuter: Outer, newOuter: Outer): St
     type: STATE_CHANGED,
     oldOuter,
     newOuter
+  }
+}
+
+export const NEXT_ITERATION = 'NEXT_ITERATION'
+
+export type NextIteration<Outer, Inner, Action> = {
+  type: 'NEXT_ITERATION'
+  log: Log<Outer, Action>
+}
+
+export function nextIteration<Outer, Inner, Action>(log: Log<Outer, Action>): NextIteration<Outer, Inner, Action> {
+  return {
+    type: NEXT_ITERATION,
+    log
   }
 }
 
@@ -32,4 +48,4 @@ export function resultReceivedMessage<Outer, Inner, Action>(result: Good<Outer, 
   }
 }
 
-export type Message<Outer, Inner, Action> = StateChangedMessage<Outer> | ResultReceivedMessage<Outer, Inner, Action>
+export type Message<Outer, Inner, Action> = StateChangedMessage<Outer> | NextIteration<Outer, Inner, Action> | ResultReceivedMessage<Outer, Inner, Action>

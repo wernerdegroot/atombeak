@@ -1,8 +1,9 @@
-import { Message, resultReceivedMessage } from "./Message";
+import { Message, resultReceivedMessage, nextIteration } from "./Message";
 import { State, Pending, Done } from "./Retryer";
 import { Command, NO_OP, RESOLVE, SHOULD_EXECUTE, shouldExecute } from "./Command";
 import { Operation } from "../Operation";
 import { Log } from "../Log";
+import { ITER, Trampoline, DONE, run } from "../Trampoline";
 
 export class Queue<Outer, Inner, Action> {
   private messages: Array<Message<Outer, Inner, Action>> = []
@@ -12,7 +13,7 @@ export class Queue<Outer, Inner, Action> {
 
   constructor(private readonly operation: Operation<Outer, Inner, Action>, private readonly getOuter: () => Outer, private readonly dispatch: (action: Action) => void) {
     const outer = getOuter()
-    this.state = new Pending([], outer)
+    this.state = new Pending([], new Log([]), outer)
     this.executeCommand(shouldExecute(outer))
   }
 
@@ -47,10 +48,16 @@ export class Queue<Outer, Inner, Action> {
     } else if (command.type === RESOLVE) {
       // What?
     } else if (command.type === SHOULD_EXECUTE) {
-      this.operation.execute(command.outer, new Log([])).then(result => {
-        const outer = this.getOuter()
-        this.push(resultReceivedMessage(result, outer))
-      })
+      run(
+        this.operation,
+        command.outer,
+        log => {
+          this.push(nextIteration(log))
+        },
+        result => {
+          const outer = this.getOuter()
+          this.push(resultReceivedMessage(result, outer))
+        })
     }
   }
 }

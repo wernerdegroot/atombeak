@@ -23,19 +23,17 @@ export function retry<Outer, Action>(log: Log<Outer, Action>): Retry<Outer, Acti
   return { type: RETRY, log }
 } 
 
-export type Result<Outer, Inner, Action> = Promise<Good<Outer, Inner, Action> | Retry<Outer, Action>>
+export type Result<Outer, Inner, Action> = Good<Outer, Inner, Action> | Retry<Outer, Action>
 
 export const Result = {
   map<Outer, A, B, Action>(result: Result<Outer, A, Action>, fn: (a: A) => B): Result<Outer, B, Action> {
-    return result.then(r => {
-      if (r.type === GOOD) {
-        return good(fn(r.value), r.log)
-      } else if (r.type === RETRY) {
-        return retry(r.log)
-      } else {
-        const exhaustive: never = r
-        throw new Error(exhaustive)
-      }
-    })
+    if (result.type === GOOD) {
+      return good(fn(result.value), result.log)
+    } else if (result.type === RETRY) {
+      return retry(result.log)
+    } else {
+      const exhaustive: never = result
+      throw new Error(exhaustive)
+    }
   }
 }
