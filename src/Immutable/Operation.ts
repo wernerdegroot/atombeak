@@ -1,8 +1,6 @@
 import { Log } from "./Log";
 import { PureOperation } from "./PureOperation";
-import { retry } from "./Result";
 import { RetryOperation } from "./RetryOperation";
-import { AbstractLog } from "../AbstractLog";
 import { TimeoutOperation } from "./TimeoutOperation";
 import { Trampoline } from "./Trampoline";
 

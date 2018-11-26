@@ -10,13 +10,7 @@ export class ReadOperation<Outer, Inner, Action> extends AbstractOperation<Outer
   }
 
   execute(log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
-    const fromLog = log.findMostRecentReadOrWrite(this.id)
-    if (fromLog === null) {
-      const inner = log.fromState(this.reader)
-      const updatedLog = log.appendReadOrWrite({type: READ, id: this.id, reader: this.reader, value: inner})
-      return done(good(inner, updatedLog))
-    } else {
-      return done(good(fromLog.value, log))
-    }
+    const [inner, updatedLog] = log.read(this.id, this.reader)
+    return done(good(inner, updatedLog))
   }
 }

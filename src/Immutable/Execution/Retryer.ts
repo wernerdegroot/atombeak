@@ -1,8 +1,7 @@
 import * as Result from "../Result";
 import { Message, STATE_CHANGED, RESULT_RECEIVED, NEXT_ITERATION } from "./Message";
 import { noOp, Command, shouldRestart, shouldContinue } from "./Command";
-import { STATE } from "../../LogItem";
-import { Log, appendSuccess, APPEND_SUCCESS, appendFailed, APPEND_FAILED, AppendResult } from "../Log";
+import { Log, APPEND_SUCCESS, APPEND_FAILED } from "../Log";
 
 export class Retry<Outer, Inner, Action> {
 
@@ -42,30 +41,17 @@ export class Pending<Outer, Inner, Action> {
         const newIntermediateOuters = [...this.intermediateOuters, message.newOuter]
         return [new Pending(this.attempt, this.intermediateLog, newIntermediateOuters), noOp]
       } else {
-        const newAttempt = this.attempt + 1
-        const newLog = Log.create<Outer, Action>(message.newOuter)
-        return [new Pending(newAttempt, newLog, []), shouldRestart(newAttempt, newLog)]
+        return this.restartWith(message.newOuter)
       }
     } else if (message.type === NEXT_ITERATION) {
       if (this.attempt !== message.attempt) {
         return [this, noOp]
       } else {
-        const appendResult = this.intermediateOuters.reduce<AppendResult<Outer, Action>>((acc, curr) => {
-          if (acc.type === APPEND_SUCCESS) {
-            return acc.log.appendState({type: STATE, outer: curr})
-          } else if(acc.type === APPEND_FAILED) {
-            return appendFailed(curr)
-          } else {
-            const exhaustive: never = acc
-            throw new Error(exhaustive)
-          }
-        }, appendSuccess(message.log))
+        const appendResult = message.log.appendStates(...this.intermediateOuters)
         if (appendResult.type === APPEND_SUCCESS) {
           return [new Pending(this.attempt, appendResult.log, []), shouldContinue(this.attempt, appendResult.log)]
         } else if (appendResult.type === APPEND_FAILED) {
-          const newAttempt = this.attempt + 1
-          const newLog = Log.create<Outer, Action>(appendResult.outer)
-          return [new Pending(newAttempt, newLog, []), shouldRestart(newAttempt, newLog)]
+          return this.restartWith(appendResult.outer)
         } else {
           const exhaustive: never = appendResult
           throw new Error(exhaustive)
@@ -89,6 +75,12 @@ export class Pending<Outer, Inner, Action> {
       throw new Error(exhaustive)
     }
   }
+
+  private restartWith(outer: Outer): [State<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
+    const newAttempt = this.attempt + 1
+    const newLog = Log.create<Outer, Action>(outer)
+    return [new Pending(newAttempt, newLog, []), shouldRestart(newAttempt, newLog)]
+  }
 }
 
 export class Done<Outer, Inner, Action> {
@@ -109,10 +101,8 @@ export class Done<Outer, Inner, Action> {
         const log = Log.create<Outer, Action>(message.newOuter)
         return [new Pending(attempt, log, []), shouldRestart(attempt, log)]
       }
-    } else if (message.type === NEXT_ITERATION) {
-      throw new Error('Next iteration while in state `Done`')
-    } else if (message.type === RESULT_RECEIVED) {
-      throw new Error('Result received while in state `Done`')
+    } else if (message.type === NEXT_ITERATION || message.type === RESULT_RECEIVED) {
+      return [this, noOp]
     } else {
       const exhaustive: never = message
       throw new Error(exhaustive)
