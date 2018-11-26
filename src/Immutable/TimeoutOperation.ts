@@ -9,7 +9,7 @@ export class TimeoutOperation<Outer, Action> extends AbstractOperation<Outer, nu
     super()
   }
 
-  execute(outer: Outer, log: Log<Outer, never>): Trampoline<Outer, null, Action> {
+  execute(log: Log<Outer, never>): Trampoline<Outer, null, Action> {
     return iter(() => 
       new Promise<[Operation<Outer, null, Action>, Log<Outer, Action>]>(resolve => {
         setTimeout(() => {

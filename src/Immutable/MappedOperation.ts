@@ -9,8 +9,8 @@ export class MappedOperation<Outer, Intermediate, Inner, Action> extends Abstrac
     super()
   }
 
-  execute(outer: Outer, log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
-    const executed = this.operation.execute(outer, log)
+  execute(log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
+    const executed = this.operation.execute(log)
     if (executed.type === ITER) {
       return iter(() => {
         return executed.next().then<[Operation<Outer, Inner, Action>, Log<Outer, Action>]>(([operation, log]) => {

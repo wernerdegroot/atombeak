@@ -2,6 +2,8 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "declaration": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
     "lib": ["es6", "dom"]
   },
   "exclude": [

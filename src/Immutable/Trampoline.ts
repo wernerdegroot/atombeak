@@ -35,14 +35,13 @@ export type Trampoline<Outer, Inner, Action> = Iter<Outer, Inner, Action> | Done
 export function run<Outer, Inner, Action>(
   operation: Operation<Outer, Inner, Action>,
   outer: Outer,
-  onNext: (log: Log<Outer, Action>) => void,
   onComplete: (result: Result<Outer, Inner, Action>) => void) {
-  const executed = operation.execute(outer, new Log([]))
+  const log = Log.create<Outer, Action>(outer)
+  const executed = operation.execute(log)
   const rec = (executed: Trampoline<Outer, Inner, Action>) => {
     if (executed.type === ITER) {
       executed.next().then(([operation, log]) => {
-        onNext(log)
-        rec(operation.execute(outer, log))
+        rec(operation.execute(log))
       })
     } else if (executed.type === DONE) {
       onComplete(executed.value)
@@ -59,6 +58,6 @@ export function runAsPromise<Outer, Inner, Action>(
   outer: Outer
 ) {
   return new Promise<Result<Outer, Inner, Action>>(resolve => {
-    run(operation, outer, () => {}, resolve)
+    run(operation, outer, resolve)
   })
 }

@@ -9,7 +9,7 @@ export class PureOperation<Outer, Inner, Action> extends AbstractOperation<Outer
     super()
   }
 
-  execute(outer: Outer, log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
+  execute(log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
     return done(good(this.inner, log))
   }
 }

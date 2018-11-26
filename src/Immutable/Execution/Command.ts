@@ -1,14 +1,34 @@
-export const SHOULD_EXECUTE = 'SHOULD_EXECUTE'
+import { Log } from "../Log";
 
-export type ShouldExecute<Outer> = {
-  type: 'SHOULD_EXECUTE'
-  outer: Outer
+export const SHOULD_RESTART: 'SHOULD_RESTART' = 'SHOULD_RESTART'
+
+export type ShouldRestart<Outer, Action> = Readonly<{
+  type: typeof SHOULD_RESTART
+  attempt: number
+  log: Log<Outer, Action>
+}>
+
+export function shouldRestart<Outer, Action>(attempt: number, log: Log<Outer, Action>): ShouldRestart<Outer, Action> {
+  return {
+    type: SHOULD_RESTART,
+    attempt,
+    log
+  }
 }
 
-export function shouldExecute<Outer>(outer: Outer): ShouldExecute<Outer> {
+export const SHOULD_CONTINUE: 'SHOULD_CONTINUE' = 'SHOULD_CONTINUE'
+
+export type ShouldContinue<Outer, Action> = Readonly<{
+  type: typeof SHOULD_CONTINUE
+  attempt: number
+  log: Log<Outer, Action>
+}>
+
+export function shouldContinue<Outer, Action>(attempt: number, log: Log<Outer, Action>): ShouldContinue<Outer, Action> {
   return {
-    type: SHOULD_EXECUTE,
-    outer
+    type: SHOULD_CONTINUE,
+    attempt,
+    log
   }
 }
 
@@ -20,12 +40,12 @@ export type Resolve<Inner, Action> = {
   actions: Action[]
 }
 
-export const NO_OP = 'NO_OP'
+export const NO_OP: 'NO_OP' = 'NO_OP'
 
 export type NoOp = {
-  type: 'NO_OP'
+  type: typeof NO_OP
 }
 
 export const noOp: NoOp = { type: NO_OP }
 
-export type Command<Outer, Inner, Action> = ShouldExecute<Outer> | Resolve<Inner, Action> | NoOp
+export type Command<Outer, Inner, Action> = ShouldRestart<Outer, Action> | ShouldContinue<Outer, Action> | Resolve<Inner, Action> | NoOp

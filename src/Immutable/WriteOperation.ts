@@ -9,8 +9,8 @@ export class WriteOperation<Outer, Inner, Action> extends AbstractOperation<Oute
     super()
   }
 
-  execute(outer: Outer, log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
-    const updatedLog = log.append({type: WRITE, id: this.id, value: this.inner, action: this.action })
+  execute(log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
+    const updatedLog = log.appendReadOrWrite({type: WRITE, id: this.id, value: this.inner, action: this.action })
     return done(good(this.inner, updatedLog))
   }
 }

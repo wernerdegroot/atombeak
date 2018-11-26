@@ -4,7 +4,7 @@ import { Result, retry } from "./Result";
 import { Trampoline, done } from "./Trampoline";
 
 export class RetryOperation<Outer, Inner, Action> implements Operation<Outer, Inner, Action> {
-  execute(outer: Outer, log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
+  execute(log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {
     return done(retry(log))
   }
 

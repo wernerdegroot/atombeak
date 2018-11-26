@@ -2,7 +2,7 @@ import { Lens } from "../../Lens";
 import { Log } from "../Log";
 import { Operation } from "../Operation";
 import { GOOD, RETRY } from "../Result";
-import { READ } from "../../LogItem";
+import { READ, STATE } from "../../LogItem";
 import { runAsPromise } from "../Trampoline";
 
 describe('Context', () => {
@@ -80,7 +80,7 @@ describe('Context', () => {
 
     return runAsPromise(operation, outer)
       .then(r => {
-        expect(r.log.hasNotChanged(outer)).toEqual(true)
+        expect(r.log.isConsistentWithOuter(outer)).toEqual(true)
       })
   })
 
@@ -92,7 +92,7 @@ describe('Context', () => {
     const p = runAsPromise(operation, outer)
     outer = { s: 'some other string', n: 4 }
     return p.then(r => {
-      expect(r.log.hasNotChanged(outer)).toEqual(true)
+      expect(r.log.isConsistentWithOuter(outer)).toEqual(true)
     })
   })
 
@@ -106,7 +106,7 @@ describe('Context', () => {
     const p = runAsPromise(operation, outer)
     outer = { s: 'some other string', n: 4 }
     return p.then(r => {
-      expect(r.log.hasNotChanged(outer)).toEqual(false)
+      expect(r.log.isConsistentWithOuter(outer)).toEqual(false)
     })
   })
 
@@ -120,7 +120,7 @@ describe('Context', () => {
     const p = runAsPromise(operation, outer)
     outer = { s: 'yet another string', n: 4 }
     return p.then(r => {
-      expect(r.log.hasNotChanged(outer)).toEqual(true)
+      expect(r.log.isConsistentWithOuter(outer)).toEqual(true)
     })
   })
 
@@ -162,7 +162,7 @@ describe('Context', () => {
     return p.then(r => {
       if (r.type === GOOD) {
         expect(r.value).toEqual('some string')
-        expect(r.log.itemsReversed).toEqual([{type: READ, id: sLens.id, value: 'some string', reader: sLens.reader}, {type: READ, id: nLens.id, value: 4, reader: nLens.reader}])
+        expect(r.log.itemsReversed).toEqual([{type: READ, id: sLens.id, value: 'some string', reader: sLens.reader}, {type: READ, id: nLens.id, value: 4, reader: nLens.reader}, {type: STATE, outer: outer}])
       } else {
         fail()
       }
@@ -186,7 +186,7 @@ describe('Context', () => {
     const p = runAsPromise(operation, outer)
     return p.then(r => {
       if (r.type === RETRY) {
-        expect(r.log.itemsReversed).toEqual([{type: READ, id: nLens.id, value: 4, reader: nLens.reader}])
+        expect(r.log.itemsReversed).toEqual([{type: READ, id: nLens.id, value: 4, reader: nLens.reader}, {type: STATE, outer: outer}])
       } else {
         fail()
       }
