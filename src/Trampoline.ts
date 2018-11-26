@@ -1,4 +1,4 @@
-import { Operation } from "./Operation";
+import { Operation } from "./Operation/Operation";
 import { Log } from "./Log";
 import { Result } from "./Result";
 

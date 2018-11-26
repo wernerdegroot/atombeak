@@ -1,4 +1,5 @@
-import * as Immutable from "./Immutable";
+import { ReadOperation } from "./Operation/ReadOperation";
+import { WriteOperation } from "./Operation/WriteOperation";
 
 export class Lens<Outer, Inner, Action> {
 
@@ -8,11 +9,11 @@ export class Lens<Outer, Inner, Action> {
     public readonly toAction: (inner: Inner) => Action
   ) { }
 
-  read(): Immutable.ReadOperation<Outer, Inner, Action> {
-    return new Immutable.ReadOperation(this.reader, this.id)
+  read(): ReadOperation<Outer, Inner, Action> {
+    return new ReadOperation(this.reader, this.id)
   }
 
-  write(inner: Inner): Immutable.WriteOperation<Outer, Inner, Action> {
-    return new Immutable.WriteOperation(inner, this.id, this.toAction(inner))
+  write(inner: Inner): WriteOperation<Outer, Inner, Action> {
+    return new WriteOperation(inner, this.id, this.toAction(inner))
   }
 }

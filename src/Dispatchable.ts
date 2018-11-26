@@ -1,4 +1,4 @@
-import { Operation } from "./Operation";
+import { Operation } from "./Operation/Operation";
 
 export class Dispatchable<Outer, Inner, Action> {
 

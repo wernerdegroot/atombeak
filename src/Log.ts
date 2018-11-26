@@ -1,5 +1,5 @@
-import { STATE, ReadLogItem, WriteLogItem, StateLogItem, LogItem, READ, WRITE } from "../LogItem";
-import { filterMap } from "../filterMap";
+import { STATE, ReadLogItem, WriteLogItem, StateLogItem, LogItem, READ, WRITE } from "./LogItem";
+import { filterMap } from "./filterMap";
 
 export const APPEND_SUCCESS: 'APPEND_SUCCESS' = 'APPEND_SUCCESS'
 

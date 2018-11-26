@@ -1,6 +1,6 @@
-import { Log } from "./Log";
+import { Log } from "../Log";
 import { AbstractOperation } from "./internal";
-import { Trampoline, iter } from "./Trampoline";
+import { Trampoline, iter } from "../Trampoline";
 import { Operation } from "./Operation";
 
 export class TimeoutOperation<Outer, Action> extends AbstractOperation<Outer, null, Action> {

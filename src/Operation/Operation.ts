@@ -1,8 +1,8 @@
-import { Log } from "./Log";
+import { Log } from "../Log";
 import { PureOperation } from "./PureOperation";
 import { RetryOperation } from "./RetryOperation";
 import { TimeoutOperation } from "./TimeoutOperation";
-import { Trampoline } from "./Trampoline";
+import { Trampoline } from "../Trampoline";
 
 export interface Operation<Outer, Inner, Action> {
   execute(log: Log<Outer, Action>): Trampoline<Outer, Inner, Action>

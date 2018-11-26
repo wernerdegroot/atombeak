@@ -1,8 +1,8 @@
 import { Operation } from "./Operation";
-import { Log } from "./Log";
+import { Log } from "../Log";
 import { AbstractOperation } from "./internal";
-import { Result } from "./Result";
-import { Trampoline, iter, ITER, done, DONE } from "./Trampoline";
+import { Result } from "../Result";
+import { Trampoline, iter, ITER, done, DONE } from "../Trampoline";
 
 export class MappedOperation<Outer, Intermediate, Inner, Action> extends AbstractOperation<Outer, Inner, Action> {
   constructor(private readonly operation: Operation<Outer, Intermediate, Action>, private readonly fn: (intermediate: Intermediate) => Inner) {

@@ -1,8 +1,8 @@
-import { Log } from "./Log";
+import { Log } from "../Log";
 import { READ } from "../LogItem";
 import { AbstractOperation } from "./internal";
-import { Result, good } from "./Result";
-import { Trampoline, done } from "./Trampoline";
+import { Result, good } from "../Result";
+import { Trampoline, done } from "../Trampoline";
 
 export class ReadOperation<Outer, Inner, Action> extends AbstractOperation<Outer, Inner, Action> {
   constructor(private readonly reader: (outer: Outer) => Inner, private readonly id: string) {

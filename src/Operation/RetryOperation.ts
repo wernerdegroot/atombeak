@@ -1,7 +1,7 @@
 import { Operation } from "./Operation";
-import { Log } from "./Log";
-import { Result, retry } from "./Result";
-import { Trampoline, done } from "./Trampoline";
+import { Log } from "../Log";
+import { Result, retry } from "../Result";
+import { Trampoline, done } from "../Trampoline";
 
 export class RetryOperation<Outer, Inner, Action> implements Operation<Outer, Inner, Action> {
   execute(log: Log<Outer, Action>): Trampoline<Outer, Inner, Action> {

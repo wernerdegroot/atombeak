@@ -1,9 +1,8 @@
 import { Operation } from "./Operation";
-import { Log } from "./Log";
+import { Log } from "../Log";
 import { MappedOperation } from "./internal";
 import { FlatMappedOperation } from "./internal";
-import { Result } from "./Result";
-import { Trampoline } from "./Trampoline";
+import { Trampoline } from "../Trampoline";
 
 export abstract class AbstractOperation<Outer, Inner, Action> implements Operation<Outer, Inner, Action> {
   abstract execute(log: Log<Outer, Action>): Trampoline<Outer, Inner, Action>

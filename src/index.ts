@@ -1,4 +1,4 @@
 export { Lens } from './Lens'
-
-import * as Immutable from './Immutable'
-export { Immutable }
+export { Operation } from './Operation/Operation'
+export { Dispatchable } from './Dispatchable'
+export { Queue } from './Execution/Queue'
