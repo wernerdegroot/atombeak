@@ -1,6 +1,6 @@
 import { Outer, sLens, nLens } from './Data'
 import { Log, APPEND_FAILED } from '../Log'
-import { READ } from '../LogItem'
+import { READ, WRITE } from '../LogItem'
 
 describe('Log', () => {
   it('should use the first `Outer` for read operations if no other `Outer`-instances are available', () => {
@@ -35,5 +35,23 @@ describe('Log', () => {
     expect(log.itemsReversed).toEqual(
       expect.arrayContaining([expect.objectContaining({ type: READ, id: nLens.id, value: 4 }), expect.objectContaining({ type: READ, id: sLens.id, value: 'some string' })])
     )
+  })
+
+  it('should record each write operation in the log', () => {
+    const outer: Outer = { s: 'some string', n: 4 }
+    let log = Log.create(outer)
+    log = log.write(sLens.id, 'some other string', sLens.toAction('some other string'))
+    log = log.write(nLens.id, 8, nLens.toAction(8))
+    expect(log.itemsReversed).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: WRITE, id: nLens.id, value: 8 }), expect.objectContaining({ type: WRITE, id: sLens.id, value: 'some other string' })])
+    )
+  })
+
+  it('should contain an action for each write operation (in the correct order!)', () => {
+    const outer: Outer = { s: 'some string', n: 4 }
+    let log = Log.create(outer)
+    log = log.write(sLens.id, 'some other string', sLens.toAction('some other string'))
+    log = log.write(nLens.id, 8, nLens.toAction(8))
+    expect(log.getActions()).toEqual([sLens.toAction('some other string'), nLens.toAction(8)])
   })
 })
