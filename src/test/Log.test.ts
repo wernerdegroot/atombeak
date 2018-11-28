@@ -1,5 +1,6 @@
 import { Outer, sLens, nLens } from './Data'
 import { Log, APPEND_FAILED } from '../Log'
+import { READ } from '../LogItem'
 
 describe('Log', () => {
   it('should use the first `Outer` for read operations if no other `Outer`-instances are available', () => {
@@ -31,6 +32,8 @@ describe('Log', () => {
     log = sReadResult[1]
     const nReadResult = log.read(nLens.id, nLens.reader)
     log = nReadResult[1]
-    expect(log).toEqual('some other string')
+    expect(log.itemsReversed).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: READ, id: nLens.id, value: 4 }), expect.objectContaining({ type: READ, id: sLens.id, value: 'some string' })])
+    )
   })
 })
