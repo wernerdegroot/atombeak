@@ -18,8 +18,7 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "typescript": "^3.1.6",
     "@types/jest": "^23.3.9",
