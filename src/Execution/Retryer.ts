@@ -1,13 +1,10 @@
-import * as Result from "../Result";
-import { Message, STATE_CHANGED, RESULT_RECEIVED, NEXT_ITERATION } from "./Message";
-import { noOp, Command, shouldRestart, shouldContinue } from "./Command";
-import { Log, APPEND_SUCCESS, APPEND_FAILED } from "../Log";
+import * as Result from '../Result'
+import { Message, STATE_CHANGED, RESULT_RECEIVED, NEXT_ITERATION } from './Message'
+import { noOp, Command, shouldRestart, shouldContinue } from './Command'
+import { Log, APPEND_SUCCESS, RESTART_WITH_OUTER } from '../Log'
 
 export class Retry<Outer, Inner, Action> {
-
-  constructor(private readonly previousAttempt: number, private readonly oldLog: Log<Outer, Action>) {
-
-  }
+  constructor(private readonly previousAttempt: number, private readonly oldLog: Log<Outer, Action>) {}
 
   next(message: Message<Outer, Inner, Action>): [State<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
     if (message.type === STATE_CHANGED) {
@@ -28,12 +25,7 @@ export class Retry<Outer, Inner, Action> {
 }
 
 export class Pending<Outer, Inner, Action> {
-
-  constructor(
-    private readonly attempt: number,
-    private readonly intermediateLog: Log<Outer, Action>,
-    private readonly intermediateOuters: Outer[]) {
-  }
+  constructor(private readonly attempt: number, private readonly intermediateLog: Log<Outer, Action>, private readonly intermediateOuters: Outer[]) {}
 
   next(message: Message<Outer, Inner, Action>): [State<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
     if (message.type === STATE_CHANGED) {
@@ -50,7 +42,7 @@ export class Pending<Outer, Inner, Action> {
         const appendResult = message.log.appendStates(...this.intermediateOuters)
         if (appendResult.type === APPEND_SUCCESS) {
           return [new Pending(this.attempt, appendResult.log, []), shouldContinue(this.attempt, appendResult.log)]
-        } else if (appendResult.type === APPEND_FAILED) {
+        } else if (appendResult.type === RESTART_WITH_OUTER) {
           return this.restartWith(appendResult.outer)
         } else {
           const exhaustive: never = appendResult
@@ -84,9 +76,7 @@ export class Pending<Outer, Inner, Action> {
 }
 
 export class Done<Outer, Inner, Action> {
-  constructor(private readonly attempt: number, private readonly inner: Inner, private readonly log: Log<Outer, Action>) {
-
-  }
+  constructor(private readonly attempt: number, private readonly inner: Inner, private readonly log: Log<Outer, Action>) {}
 
   getActions() {
     return this.log.getActions()

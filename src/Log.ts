@@ -15,21 +15,21 @@ export function appendSuccess<Outer, Action>(log: Log<Outer, Action>): AppendSuc
   }
 }
 
-export const APPEND_FAILED: 'APPEND_FAILED' = 'APPEND_FAILED'
+export const RESTART_WITH_OUTER: 'RESTART_WITH_OUTER' = 'RESTART_WITH_OUTER'
 
-export type AppendFailed<Outer> = Readonly<{
-  type: typeof APPEND_FAILED
+export type RestartWithOuter<Outer> = Readonly<{
+  type: typeof RESTART_WITH_OUTER
   outer: Outer
 }>
 
-export function appendFailed<Outer>(outer: Outer): AppendFailed<Outer> {
+export function restartWithOuter<Outer>(outer: Outer): RestartWithOuter<Outer> {
   return {
-    type: APPEND_FAILED,
+    type: RESTART_WITH_OUTER,
     outer
   }
 }
 
-export type AppendResult<Outer, Action> = AppendSucces<Outer, Action> | AppendFailed<Outer>
+export type AppendResult<Outer, Action> = AppendSucces<Outer, Action> | RestartWithOuter<Outer>
 
 export class Log<Outer, Action> {
   static create<Outer, Action>(originalOuter: Outer): Log<Outer, Action> {
@@ -120,7 +120,7 @@ export class Log<Outer, Action> {
       const newLog = new Log([logItem, ...this.itemsReversed])
       return appendSuccess(newLog)
     } else {
-      return appendFailed(logItem.outer)
+      return restartWithOuter(logItem.outer)
     }
   }
 
@@ -128,8 +128,8 @@ export class Log<Outer, Action> {
     return outers.reduce<AppendResult<Outer, Action>>((acc, curr) => {
       if (acc.type === APPEND_SUCCESS) {
         return acc.log.appendState(curr)
-      } else if (acc.type === APPEND_FAILED) {
-        return appendFailed(curr)
+      } else if (acc.type === RESTART_WITH_OUTER) {
+        return restartWithOuter(curr)
       } else {
         const exhaustive: never = acc
         throw new Error(exhaustive)
