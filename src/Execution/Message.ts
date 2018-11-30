@@ -39,15 +39,13 @@ export type ResultReceivedMessage<Outer, Inner, Action> = {
   type: 'RESULT_RECEIVED'
   attempt: number
   result: Good<Outer, Inner, Action> | Retry<Outer, Action>
-  outer: Outer
 }
 
-export function resultReceivedMessage<Outer, Inner, Action>(attempt: number, result: Good<Outer, Inner, Action> | Retry<Outer, Action>, outer: Outer): ResultReceivedMessage<Outer, Inner, Action> {
+export function resultReceivedMessage<Outer, Inner, Action>(attempt: number, result: Good<Outer, Inner, Action> | Retry<Outer, Action>): ResultReceivedMessage<Outer, Inner, Action> {
   return {
     type: RESULT_RECEIVED,
     attempt,
     result,
-    outer
   }
 }
 

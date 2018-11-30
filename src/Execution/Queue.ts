@@ -14,7 +14,7 @@ export class Queue<Outer, Inner, Action> {
 
   constructor(
     private originalOperation: Operation<Outer, Inner, Action>,
-    private readonly getOuter: () => Outer,
+    getOuter: () => Outer,
     private readonly dispatch: (action: Action) => void) {
     this.operation = originalOperation
     const attempt = 0
@@ -65,7 +65,7 @@ export class Queue<Outer, Inner, Action> {
           // is resolved. Many states may have passed in the meantime.
         })
       } else if (trampoline.type === DONE) {
-        this.push(resultReceivedMessage(command.attempt, trampoline.value, this.getOuter()))
+        this.push(resultReceivedMessage(command.attempt, trampoline.value))
       } else {
         const exhaustive: never = trampoline
         throw new Error(exhaustive)
@@ -78,7 +78,7 @@ export class Queue<Outer, Inner, Action> {
           this.push(nextIteration(command.attempt, log))
         })
       } else if (trampoline.type === DONE) {
-        this.push(resultReceivedMessage(command.attempt, trampoline.value, this.getOuter()))
+        this.push(resultReceivedMessage(command.attempt, trampoline.value))
       } else {
         const exhaustive: never = trampoline
         throw new Error(exhaustive)
