@@ -4,7 +4,7 @@ import { READ, STATE } from '../LogItem'
 import { runAsPromise } from '../Trampoline'
 import { sLens, nLens, Outer, Action } from './Data'
 
-describe('Context', () => {
+describe('Operation', () => {
   it('should return the current value when reading', () => {
     let outer = { s: 'some string', n: 4 }
     const operation = sLens.read()

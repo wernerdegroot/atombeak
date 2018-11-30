@@ -1,17 +1,17 @@
 import { Retry, Good } from "../Result";
 import { Log } from "../Log";
 
-export const STATE_CHANGED = 'STATE_CHANGED'
+export const OUTER_CHANGED = 'OUTER_CHANGED'
 
-export type StateChangedMessage<Outer> = {
-  type: 'STATE_CHANGED'
+export type OuterChangedMessage<Outer> = {
+  type: 'OUTER_CHANGED'
   oldOuter: Outer
   newOuter: Outer
 }
 
-export function stateChangedMessage<Outer>(oldOuter: Outer, newOuter: Outer): StateChangedMessage<Outer> {
+export function outerChangedMessage<Outer>(oldOuter: Outer, newOuter: Outer): OuterChangedMessage<Outer> {
   return {
-    type: STATE_CHANGED,
+    type: OUTER_CHANGED,
     oldOuter,
     newOuter
   }
@@ -51,4 +51,4 @@ export function resultReceivedMessage<Outer, Inner, Action>(attempt: number, res
   }
 }
 
-export type Message<Outer, Inner, Action> = StateChangedMessage<Outer> | NextIteration<Outer, Action> | ResultReceivedMessage<Outer, Inner, Action>
+export type Message<Outer, Inner, Action> = OuterChangedMessage<Outer> | NextIteration<Outer, Action> | ResultReceivedMessage<Outer, Inner, Action>

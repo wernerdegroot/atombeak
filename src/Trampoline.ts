@@ -32,7 +32,7 @@ export function done<Outer, Inner, Action>(value: Result<Outer, Inner, Action>):
 
 export type Trampoline<Outer, Inner, Action> = Iter<Outer, Inner, Action> | Done<Outer, Inner, Action>
 
-export function run<Outer, Inner, Action>(
+function run<Outer, Inner, Action>(
   operation: Operation<Outer, Inner, Action>,
   outer: Outer,
   onComplete: (result: Result<Outer, Inner, Action>) => void) {

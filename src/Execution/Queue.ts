@@ -1,15 +1,15 @@
 import { Message, resultReceivedMessage, nextIteration, NEXT_ITERATION, RESULT_RECEIVED } from "./Message";
-import { State, Pending, Done } from "./Retryer";
+import { TransactionState, Pending, Done } from "./TransactionState";
 import { Command, NO_OP, RESOLVE, SHOULD_RESTART, shouldRestart, SHOULD_CONTINUE } from "./Command";
 import { Operation } from "../Operation/Operation";
 import { Log } from "../Log";
-import { ITER, Trampoline, DONE, run } from "../Trampoline";
+import { ITER, DONE } from "../Trampoline";
 
 export class Queue<Outer, Inner, Action> {
   private messages: Array<Message<Outer, Inner, Action>> = []
   private isExecuting = false
   public isDone = false
-  private state: State<Outer, Inner, Action>
+  private state: TransactionState<Outer, Inner, Action>
   private operation: Operation<Outer, Inner, Action>
 
   constructor(

@@ -1,13 +1,13 @@
 import * as Result from '../Result'
-import { Message, STATE_CHANGED, RESULT_RECEIVED, NEXT_ITERATION } from './Message'
+import { Message, OUTER_CHANGED, RESULT_RECEIVED, NEXT_ITERATION } from './Message'
 import { noOp, Command, shouldRestart, shouldContinue } from './Command'
 import { Log, APPEND_SUCCESS, RESTART_WITH_OUTER } from '../Log'
 
 export class Retry<Outer, Inner, Action> {
   constructor(private readonly previousAttempt: number, private readonly oldLog: Log<Outer, Action>) {}
 
-  next(message: Message<Outer, Inner, Action>): [State<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
-    if (message.type === STATE_CHANGED) {
+  next(message: Message<Outer, Inner, Action>): [TransactionState<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
+    if (message.type === OUTER_CHANGED) {
       if (this.oldLog.isConsistentWithOuter(message.newOuter)) {
         return [this, noOp]
       } else {
@@ -27,8 +27,8 @@ export class Retry<Outer, Inner, Action> {
 export class Pending<Outer, Inner, Action> {
   constructor(private readonly attempt: number, private readonly intermediateLog: Log<Outer, Action>, private readonly intermediateOuters: Outer[]) {}
 
-  next(message: Message<Outer, Inner, Action>): [State<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
-    if (message.type === STATE_CHANGED) {
+  next(message: Message<Outer, Inner, Action>): [TransactionState<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
+    if (message.type === OUTER_CHANGED) {
       if (this.intermediateLog.isConsistentWithOuter(message.newOuter)) {
         const newIntermediateOuters = [...this.intermediateOuters, message.newOuter]
         return [new Pending(this.attempt, this.intermediateLog, newIntermediateOuters), noOp]
@@ -68,7 +68,7 @@ export class Pending<Outer, Inner, Action> {
     }
   }
 
-  private restartWith(outer: Outer): [State<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
+  private restartWith(outer: Outer): [TransactionState<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
     const newAttempt = this.attempt + 1
     const newLog = Log.create<Outer, Action>(outer)
     return [new Pending(newAttempt, newLog, []), shouldRestart(newAttempt, newLog)]
@@ -82,8 +82,8 @@ export class Done<Outer, Inner, Action> {
     return this.log.getActions()
   }
 
-  next(message: Message<Outer, Inner, Action>): [State<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
-    if (message.type === STATE_CHANGED) {
+  next(message: Message<Outer, Inner, Action>): [TransactionState<Outer, Inner, Action>, Command<Outer, Inner, Action>] {
+    if (message.type === OUTER_CHANGED) {
       if (this.log.isConsistentWithOuter(message.newOuter)) {
         return [this, noOp]
       } else {
@@ -100,4 +100,14 @@ export class Done<Outer, Inner, Action> {
   }
 }
 
-export type State<Outer, Inner, Action> = Retry<Outer, Inner, Action> | Pending<Outer, Inner, Action> | Done<Outer, Inner, Action>
+/**
+ * Represents the state in which a transaction can be.
+ * The transaction is either:
+ * 
+ *   1. Idle, and waiting for the `Outer` to change (meaningfully) to restart.
+ * 
+ *   2. Pending
+ * 
+ *   3. Done
+ */
+export type TransactionState<Outer, Inner, Action> = Retry<Outer, Inner, Action> | Pending<Outer, Inner, Action> | Done<Outer, Inner, Action>
