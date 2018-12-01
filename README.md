@@ -35,11 +35,11 @@ type BankAccount = Readonly<{
 To update the bank accounts, we create the following action:
 
 ```typescript
-type UpdateBankAccount = {
+type UpdateBankAccount = Readonly<{
   type: 'UPDATE_BANK_ACCOUNT'
   accountNumber: string
   balance: number
-}
+}>
 
 function updateBankAccount(accountNumber: string, balance: number): UpdateBankAccount {
   return {
@@ -176,7 +176,7 @@ One particularly attractive way to implement transactions is well established in
 
 When the operation is finished, the implementation first validates the log and, if validation is successful, commits the log. The validation step examines each `read` recorded in the log, and checks that the value in the log matches the value currently in the real store state. If so, validation succeeds, and the commit step takes all the writes recorded in the log and writes them to the store state by dispatching all the associated actions. 
 
-What if validation fails? Then the transaction has had an inconsistent view of the store state. So we abort the transaction, re-initialise the log, and run the operation all over again. This process is called re-execution. Since none of the operations `write`s have been committed to the store state, it is perfectly safe to run it again. However, notice that it is crucial that act contains no effects that may not be repeated. Fetching from a webserver may or may not be acceptable.
+What if validation fails? Then the transaction has had an inconsistent view of the store state. So we abort the transaction, re-initialise the log, and run the operation all over again. This process is called re-execution. Since none of the operations `write`s have been committed to the store state, it is perfectly safe to run it again. However, notice that it is crucial that the operation contains no code that may not be repeated. Fetching from a web server may or may not be acceptable.
 
 ### Blocking and choice
 
@@ -198,8 +198,7 @@ function limitedWithdraw(balanceVar: TVar<StoreState, number, Action>, amount: n
 }
 ```
 
-The semantics of `Operation.retry()` are simple: if a retry action is performed, the current transaction is abandoned and retried at some later time. It would be correct to retry the transaction immediately, but it would also be inefficient: the state of the account will probably be unchanged, so the transaction will again hit the retry. The implementation in this library would instead wait until some other piece of code writes to to the balance of the given account. How does the implementation know to wait on the balance of that particular account? Because the transaction read `balanceVar` on the way to the retry, and that fact is
-conveniently recorded in the transaction log.
+The semantics of `Operation.retry()` are simple: if a retry action is performed, the current transaction is abandoned and retried at some later time. It would be correct to retry the transaction immediately, but it would also be inefficient: the state of the account will probably be unchanged, so the transaction will again hit the retry. This library will instead wait until some other piece of code writes to to the balance of the given account. How does the implementation know to wait on the balance of that particular account? Because the transaction read `balanceVar` on the way to the retry, and that fact is conveniently recorded in the transaction log.
 
 ### Example: dining philosophers
 
