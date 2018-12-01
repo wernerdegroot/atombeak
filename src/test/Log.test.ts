@@ -1,11 +1,10 @@
 import { Outer, sLens, nLens, Action } from './Data'
 import { Log, RESTART_WITH_OUTER, APPEND_SUCCESS } from '../Log'
 import { READ, WRITE, STATE } from '../LogItem'
-import { Lens } from '../Lens';
+import { TVar } from '../TVar'
 
 describe('Log', () => {
-
-  function readFromLens<Inner>(lens: Lens<Outer, Inner, Action>, log: Log<Outer, Action>): Log<Outer, Action> {
+  function readFromTVar<Inner>(lens: TVar<Outer, Inner, Action>, log: Log<Outer, Action>): Log<Outer, Action> {
     return log.read(lens.id, lens.reader)[1]
   }
 
@@ -34,8 +33,8 @@ describe('Log', () => {
   it('should record each read operation in the log', () => {
     const outer: Outer = { s: 'some string', n: 4 }
     let log = Log.create<Outer, Action>(outer)
-    log = readFromLens(sLens, log)
-    log = readFromLens(nLens, log)
+    log = readFromTVar(sLens, log)
+    log = readFromTVar(nLens, log)
     expect(log.itemsReversed).toEqual(
       expect.arrayContaining([expect.objectContaining({ type: READ, id: nLens.id, value: 4 }), expect.objectContaining({ type: READ, id: sLens.id, value: 'some string' })])
     )
@@ -62,7 +61,7 @@ describe('Log', () => {
   it('should reject `Outer` that is inconsistent with performed reads', () => {
     const firstOuter: Outer = { s: 'some string', n: 4 }
     let log = Log.create<Outer, Action>(firstOuter)
-    log = readFromLens(sLens, log)
+    log = readFromTVar(sLens, log)
     const secondOuter: Outer = { s: 'some other string', n: 4 }
     const appendResult = log.appendState(secondOuter)
     if (appendResult.type === APPEND_SUCCESS) {
@@ -75,7 +74,7 @@ describe('Log', () => {
   it('should accept `Outer` that is consistent with performed reads', () => {
     const firstOuter: Outer = { s: 'some string', n: 4 }
     let log = Log.create<Outer, Action>(firstOuter)
-    log = readFromLens(nLens, log)
+    log = readFromTVar(nLens, log)
     const secondOuter: Outer = { s: 'some other string', n: 4 }
     const appendResult = log.appendState(secondOuter)
     if (appendResult.type === RESTART_WITH_OUTER) {
@@ -88,7 +87,7 @@ describe('Log', () => {
   it('should reject all `Outer`-instances that are inconsistent with performed reads, and return the last `Outer` (even if that `Outer` is valid)', () => {
     const firstOuter: Outer = { s: 'some string', n: 4 }
     let log = Log.create<Outer, Action>(firstOuter)
-    log = readFromLens(sLens, log)
+    log = readFromTVar(sLens, log)
     const secondOuter: Outer = { s: 'some other string', n: 4 }
     const thirdOuter: Outer = { s: 'some string', n: 8 }
     const appendResult = log.appendStates(secondOuter, thirdOuter)
@@ -102,7 +101,7 @@ describe('Log', () => {
   it('should accept all `Outer`-instances that are consistent with performed reads', () => {
     const firstOuter: Outer = { s: 'some string', n: 4 }
     let log = Log.create<Outer, Action>(firstOuter)
-    log = readFromLens(nLens, log)
+    log = readFromTVar(nLens, log)
     const secondOuter: Outer = { s: 'some other string', n: 4 }
     const thirdOuter: Outer = { s: 'yet another string', n: 4 }
     let appendResult = log.appendStates(secondOuter, thirdOuter)

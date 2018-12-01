@@ -1,24 +1,21 @@
-import { Message, resultReceivedMessage, nextIteration, NEXT_ITERATION, RESULT_RECEIVED } from "./Message";
-import { TransactionState, Pending, Done } from "./TransactionState";
-import { Command, NO_OP, RESOLVE, SHOULD_RESTART, shouldRestart, SHOULD_CONTINUE } from "./Command";
-import { Operation } from "../Operation/Operation";
-import { Log } from "../Log";
-import { ITER, DONE } from "../Trampoline";
+import { Message, resultReceivedMessage, nextIteration, NEXT_ITERATION, RESULT_RECEIVED } from './Message'
+import { TransactionState, Pending, Done } from './TransactionState'
+import { Command, NO_OP, RESOLVE, SHOULD_RESTART, shouldRestart, SHOULD_CONTINUE } from './Command'
+import { Operation } from '../Operation/Operation'
+import { Log } from '../Log'
+import { ITER, DONE } from '../Trampoline'
 
-export class Queue<Outer, Inner, Action> {
+export class Transaction<Outer, Inner, Action> {
   private messages: Array<Message<Outer, Inner, Action>> = []
   private isExecuting = false
   public isDone = false
   private state: TransactionState<Outer, Inner, Action>
   private operation: Operation<Outer, Inner, Action>
 
-  constructor(
-    private originalOperation: Operation<Outer, Inner, Action>,
-    getOuter: () => Outer,
-    private readonly dispatch: (action: Action) => void) {
+  constructor(private originalOperation: Operation<Outer, Inner, Action>, outer: Outer, private readonly dispatch: (action: Action) => void) {
     this.operation = originalOperation
     const attempt = 0
-    const log = Log.create<Outer, Action>(getOuter())
+    const log = Log.create<Outer, Action>(outer)
     this.state = new Pending(attempt, log, [])
     this.executeCommand(shouldRestart(attempt, log))
   }
@@ -35,7 +32,6 @@ export class Queue<Outer, Inner, Action> {
         const [head, ...tail] = this.messages
         this.messages = tail
         const [nextState, command] = this.state.next(head)
-        console.log(this.state, head, nextState, command)
         this.state = nextState
         this.executeCommand(command)
       }
@@ -61,8 +57,6 @@ export class Queue<Outer, Inner, Action> {
         trampoline.next().then(([operation, log]) => {
           this.operation = operation
           this.push(nextIteration(command.attempt, log))
-          // Problem with this: log is old when the promise in the trampoline
-          // is resolved. Many states may have passed in the meantime.
         })
       } else if (trampoline.type === DONE) {
         this.push(resultReceivedMessage(command.attempt, trampoline.value))

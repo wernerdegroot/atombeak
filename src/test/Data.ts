@@ -1,4 +1,4 @@
-import { Lens } from '../Lens'
+import { TVar } from '../TVar'
 
 export type Outer = {
   s: string
@@ -10,5 +10,5 @@ export type Action = {
   value: Outer[keyof Outer]
 }
 
-export const sLens = new Lens<Outer, string, Action>(o => o.s, 's', value => ({ field: 's', value }))
-export const nLens = new Lens<Outer, number, Action>(o => o.n, 'n', value => ({ field: 'n', value }))
+export const sLens = new TVar<Outer, string, Action>(o => o.s, 's', value => ({ field: 's', value }))
+export const nLens = new TVar<Outer, number, Action>(o => o.n, 'n', value => ({ field: 'n', value }))

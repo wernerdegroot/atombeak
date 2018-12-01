@@ -1,3 +1,3 @@
-export { Lens } from './Lens'
+export { TVar } from './TVar'
 export { Operation } from './Operation/Operation'
-export { Queue } from './Execution/Queue'
+export { Transaction } from './Execution/Transaction'

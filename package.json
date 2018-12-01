@@ -18,7 +18,9 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "@types/node": "^10.12.11"
+  },
   "devDependencies": {
     "typescript": "^3.1.6",
     "@types/jest": "^23.3.9",

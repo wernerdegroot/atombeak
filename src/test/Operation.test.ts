@@ -50,7 +50,7 @@ describe('Operation', () => {
     })
   })
 
-  it('should claim the context is valid when nothing changed', () => {
+  it('should claim the log is valid when nothing changed', () => {
     let outer = { s: 'some string', n: 4 }
     const operation = nLens.read()
 
@@ -59,7 +59,7 @@ describe('Operation', () => {
     })
   })
 
-  it('should claim the context is valid when all values read are unchanged', () => {
+  it('should claim the log is valid when all values read are unchanged', () => {
     let outer = { s: 'some string', n: 4 }
     const operation = nLens.read()
 
@@ -70,7 +70,7 @@ describe('Operation', () => {
     })
   })
 
-  it('should claim the context is invalid when one of the values read has changed', () => {
+  it('should claim the log is invalid when one of the values read has changed', () => {
     let outer = { s: 'some string', n: 4 }
     const operation = nLens.read().flatMap(() => {
       return sLens.read()
@@ -82,7 +82,7 @@ describe('Operation', () => {
     })
   })
 
-  it('should claim the context is valid when reading occurs after writing', () => {
+  it('should claim the log is valid when reading occurs after writing', () => {
     let outer = { s: 'some string', n: 4 }
     const operation = sLens.write('some other string').flatMap(() => {
       return sLens.read()
