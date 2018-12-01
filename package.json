@@ -1,7 +1,7 @@
 {
   "name": "atombeak",
   "version": "0.0.26",
-  "description": "",
+  "description": "Create asynchronous atomic functions!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": {
@@ -16,14 +16,14 @@
     "compile": "npm run clean && tsc -p .",
     "prepublishOnly": "npm run test && npm run compile"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Werner de Groot",
+  "license": "MIT",
   "dependencies": {
-    "@types/node": "^10.12.11"
   },
   "devDependencies": {
-    "typescript": "^3.1.6",
-    "@types/jest": "^23.3.9",
-    "jest": "^23.6.0"
+    "typescript": "3.1.6",
+    "@types/node": "10.12.11",
+    "@types/jest": "23.3.9",
+    "jest": "23.6.0"
   }
 }
