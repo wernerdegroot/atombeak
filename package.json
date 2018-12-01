@@ -18,12 +18,12 @@
   },
   "author": "Werner de Groot",
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "typescript": "3.1.6",
-    "@types/node": "10.12.11",
     "@types/jest": "23.3.9",
-    "jest": "23.6.0"
+    "@types/node": "10.12.11",
+    "jest": "23.6.0",
+    "redux": "^4.0.1",
+    "typescript": "3.1.6"
   }
 }

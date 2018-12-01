@@ -5,4 +5,4 @@
 * Add Travis.
 * Add unit test for example in README.md
 * Annotate example.
-* Write middleware.
+* ~~Write middleware.~~

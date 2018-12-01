@@ -31,6 +31,9 @@ export interface Operation<Outer, Inner, Action> {
 }
 
 export const Operation = {
+  isOperation<Outer, Inner, Action>(o: any): o is Operation<Outer, Inner, Action> {
+    return typeof o === 'object' && 'execute' in o && typeof o.execute === 'function'
+  },
   pure<Outer, Inner, Action>(inner: Inner) {
     return new PureOperation<Outer, Inner, Action>(inner)
   },
