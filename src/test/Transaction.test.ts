@@ -33,7 +33,9 @@ describe('Transaction', () => {
 
     // Start the transaction:
     const transaction = new Transaction<Outer, number, Action>(withdrawFiveHundred, outer, action => {
+      const oldOuter = outer
       outer = action(outer)
+      transaction.push(outerChangedMessage(oldOuter, outer))
     })
 
     // Make sure all `Promise<..>` that *can* be resolved, are resolved:
@@ -80,7 +82,9 @@ describe('Transaction', () => {
 
     // Start the transaction:
     const transaction = new Transaction<Outer, number, Action>(withdrawFiveHundredIfAvailable, outer, action => {
+      const oldOuter = outer
       outer = action(outer)
+      transaction.push(outerChangedMessage(oldOuter, outer))
     })
 
     // Make sure all `Promise<..>` that *can* be resolved, are resolved:
@@ -124,5 +128,63 @@ describe('Transaction', () => {
     // The transaction should be finished now:
     expect(transaction.isDone).toEqual(true)
     expect(outer).toEqual({ accountBalance: 500 })
+  })
+
+  it('should deal with two competing transactions by running them sequentially', async () => {
+    // Account with a balance of 1000:
+    let outer: Outer = {
+      accountBalance: 1000
+    }
+
+    const clock = testClock(0)
+
+    // An operation that withdraws 500 from the account, but
+    // waits 5 seconds before committing:
+    const withdrawFiveHundred: Operation<Outer, number, Action> = accountBalance
+      .read()
+      .flatMap(b => accountBalance.write(b - 500))
+      .flatMap(() => Operation.timeout<Outer, Action>(5000, clock))
+      .flatMap(() => accountBalance.read())
+
+    // Start two transactions:
+    const transactions: Transaction<Outer, number, Action>[] = []
+    const executeAction = (action: Action) => {
+      const oldOuter = outer
+      outer = action(outer)
+      transactions.forEach(transaction => transaction.push(outerChangedMessage(oldOuter, outer)))
+    }
+    const transaction1 = new Transaction<Outer, number, Action>(withdrawFiveHundred, outer, executeAction)
+    const transaction2 = new Transaction<Outer, number, Action>(withdrawFiveHundred, outer, executeAction)
+    transactions.push(transaction1, transaction2)
+
+    // Make sure all `Promise<..>` that *can* be resolved, are resolved:
+    await flushPromises()
+
+    // Wait 5 seconds:
+    clock.setTime(5000)
+
+    // Make sure all `Promise<..>` that *can* be resolved, are resolved:
+    await flushPromises()
+
+    // The first transaction should be finished now:
+    expect(transaction1.isDone).toEqual(true)
+    expect(outer).toEqual({ accountBalance: 500 })
+
+    // The second should be restarted, because the `Outer` was changed by
+    // the first transaction:
+    expect(transaction2.isDone).toEqual(false)
+
+    // Make sure all `Promise<..>` that *can* be resolved, are resolved:
+    await flushPromises()
+
+    // Wait another 5 seconds:
+    clock.setTime(10000)
+
+    // Make sure all `Promise<..>` that *can* be resolved, are resolved:
+    await flushPromises()
+
+    // The second transaction should now also be finished:
+    expect(transaction2.isDone).toEqual(true)
+    expect(outer).toEqual({ accountBalance: 0 })
   })
 })
