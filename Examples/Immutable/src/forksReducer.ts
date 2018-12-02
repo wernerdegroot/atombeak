@@ -1,10 +1,13 @@
-import { Action, PICK_UP_FORK, PUT_DOWN_FORK } from "./actions";
-import { NUMBER_OF_PHILOSPHERS } from "./const";
+import { Action, PICK_UP_FORK, PUT_DOWN_FORK } from './actions'
+import { NUMBER_OF_PHILOSPHERS } from './const'
 
-function setFork(forks: boolean[], index: number, value: boolean): boolean[] {
-  return forks.map((fork, i) => i === index ? value : fork) 
+// Assigns a value `true` (fork is taken by a philosopher) or
+// `false` (fork is free) to the given `forkIndex`.
+function setFork(forks: boolean[], forkIndex: number, value: boolean): boolean[] {
+  return forks.map((fork, i) => (i === forkIndex ? value : fork))
 }
 
+// Each fork is initially free.
 const defaultForks: boolean[] = []
 for (let i = 0; i < NUMBER_OF_PHILOSPHERS; ++i) {
   defaultForks.push(false)

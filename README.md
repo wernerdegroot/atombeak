@@ -5,7 +5,7 @@ The library has been written with Redux in mind (but can be used without it just
 
 ## Beautiful concurrency
 
-*What follows is adapted from [Simon Peyton Jones' "Beautiful concurrency"](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/beautiful.pdf).*
+*What follows is adapted from [Simon Peyton Jones' "Beautiful concurrency"](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/beautiful.pdf) which I warmly reccomend.*
 
 ### A simple example: bank accounts
 

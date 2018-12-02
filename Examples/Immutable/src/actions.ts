@@ -1,10 +1,11 @@
 export const PICK_UP_FORK = 'PICK_UP_FORK'
 
-export type PickUpFork = {
+// Let philospher `philosopherIndex` pick up fork `forkIndex`.
+export type PickUpFork = Readonly<{
   type: typeof PICK_UP_FORK
   forkIndex: number
   philospherIndex: number
-}
+}>
 
 export function pickUpFork(forkIndex: number, philospherIndex: number): PickUpFork {
   return {
@@ -16,11 +17,12 @@ export function pickUpFork(forkIndex: number, philospherIndex: number): PickUpFo
 
 export const PUT_DOWN_FORK = 'PUT_DOWN_FORK'
 
-export type PutDownFork = {
+// Let philospher `philosopherIndex` put down fork `forkIndex`.
+export type PutDownFork = Readonly<{
   type: typeof PUT_DOWN_FORK
   forkIndex: number
   philospherIndex: number
-}
+}>
 
 export function putDownFork(forkIndex: number, philospherIndex: number): PutDownFork {
   return {

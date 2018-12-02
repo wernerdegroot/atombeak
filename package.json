@@ -1,6 +1,6 @@
 {
   "name": "atombeak",
-  "version": "0.0.26",
+  "version": "0.0.28",
   "description": "Create asynchronous atomic functions!",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
