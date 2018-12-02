@@ -1,3 +1,5 @@
+![](https://travis-ci.org/wernerdegroot/atombeak.svg?branch=master)
+
 # atombeak
 Create asynchronous atomic functions!
 
