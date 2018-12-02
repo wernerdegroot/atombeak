@@ -1,4 +1,4 @@
-![](https://travis-ci.org/wernerdegroot/atombeak.svg?branch=master)
+[![Build Status](https://travis-ci.org/wernerdegroot/atombeak.svg?branch=master)](https://travis-ci.org/wernerdegroot/atombeak)
 
 # atombeak
 Create asynchronous atomic functions!
