@@ -2,6 +2,6 @@
 * ~~Implement retry functionality.~~
 * ~~Implement timeout tests with custom clock/custom promise.~~
 * Add Linting.
-* Add Travis.
+* ~~Add Travis.~~
 * ~~Annotate example.~~
 * ~~Write middleware.~~
