@@ -1,5 +1,5 @@
-import { Retry, Good } from "../Result";
-import { Log } from "../Log";
+import { Retry, Good } from '../Result'
+import { Log } from '../Log'
 
 export const OUTER_CHANGED = 'OUTER_CHANGED'
 
@@ -29,7 +29,7 @@ export function nextIteration<Outer, Action>(attempt: number, log: Log<Outer, Ac
   return {
     type: NEXT_ITERATION,
     attempt,
-    log,
+    log
   }
 }
 
@@ -41,11 +41,14 @@ export type ResultReceivedMessage<Outer, Inner, Action> = {
   result: Good<Outer, Inner, Action> | Retry<Outer, Action>
 }
 
-export function resultReceivedMessage<Outer, Inner, Action>(attempt: number, result: Good<Outer, Inner, Action> | Retry<Outer, Action>): ResultReceivedMessage<Outer, Inner, Action> {
+export function resultReceivedMessage<Outer, Inner, Action>(
+  attempt: number,
+  result: Good<Outer, Inner, Action> | Retry<Outer, Action>
+): ResultReceivedMessage<Outer, Inner, Action> {
   return {
     type: RESULT_RECEIVED,
     attempt,
-    result,
+    result
   }
 }
 

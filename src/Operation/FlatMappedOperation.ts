@@ -1,8 +1,8 @@
-import { Operation } from "./Operation";
-import { Log } from "../Log";
-import { AbstractOperation } from "./internal";
-import { Result, GOOD, RETRY, retry } from "../Result";
-import { Trampoline, ITER, DONE, iter, done } from "../Trampoline";
+import { Operation } from './Operation'
+import { Log } from '../Log'
+import { AbstractOperation } from './internal'
+import { GOOD, RETRY, retry } from '../Result'
+import { Trampoline, ITER, DONE, iter, done } from '../Trampoline'
 
 export class FlatMappedOperation<Outer, Intermediate, Inner, Action> extends AbstractOperation<Outer, Inner, Action> {
   constructor(private readonly operation: Operation<Outer, Intermediate, Action>, private readonly fn: (intermediate: Intermediate) => Operation<Outer, Inner, Action>) {

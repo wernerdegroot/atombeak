@@ -1,4 +1,4 @@
-import { Log } from "../Log";
+import { Log } from '../Log'
 
 export const SHOULD_RESTART: 'SHOULD_RESTART' = 'SHOULD_RESTART'
 

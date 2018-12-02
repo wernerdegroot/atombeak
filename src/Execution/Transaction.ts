@@ -1,4 +1,4 @@
-import { Message, resultReceivedMessage, nextIteration, NEXT_ITERATION, RESULT_RECEIVED } from './Message'
+import { Message, resultReceivedMessage, nextIteration } from './Message'
 import { TransactionState, Pending, Done } from './TransactionState'
 import { Command, NO_OP, RESOLVE, SHOULD_RESTART, shouldRestart, SHOULD_CONTINUE } from './Command'
 import { Operation } from '../Operation/Operation'

@@ -54,7 +54,7 @@ export class Pending<Outer, Inner, Action> {
         return [this, noOp]
       } else {
         if (message.result.type === Result.GOOD) {
-          return [new Done(this.attempt, message.result.value, message.result.log), noOp]
+          return [new Done(this.attempt, message.result.log), noOp]
         } else if (message.result.type === Result.RETRY) {
           return [new Retry(this.attempt, message.result.log), noOp]
         } else {
@@ -76,7 +76,7 @@ export class Pending<Outer, Inner, Action> {
 }
 
 export class Done<Outer, Inner, Action> {
-  constructor(private readonly attempt: number, private readonly inner: Inner, private readonly log: Log<Outer, Action>) {}
+  constructor(private readonly attempt: number, private readonly log: Log<Outer, Action>) {}
 
   getActions() {
     return this.log.getActions()
@@ -103,11 +103,11 @@ export class Done<Outer, Inner, Action> {
 /**
  * Represents the state in which a transaction can be.
  * The transaction is either:
- * 
+ *
  *   1. Idle, and waiting for the `Outer` to change (meaningfully) to restart.
- * 
+ *
  *   2. Pending
- * 
+ *
  *   3. Done
  */
 export type TransactionState<Outer, Inner, Action> = Retry<Outer, Inner, Action> | Pending<Outer, Inner, Action> | Done<Outer, Inner, Action>
