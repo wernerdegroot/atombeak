@@ -10,7 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "atombeak": "1.0.0",
+    "atombeak": "1.0.1",
     "react": "16.6.3",
     "react-dom": "16.6.3",
     "react-redux": "5.1.1",
