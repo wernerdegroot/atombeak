@@ -151,6 +151,8 @@ function deposit(balanceVar: TVar<StoreState, number, Action>, amount: number): 
 }
 ```
 
+In case you are wondering what this `flatMap` is all about, I recommend [reading up](https://mostly-adequate.gitbooks.io/mostly-adequate-guide) on monads a little bit.
+
 We can build big operations by combining smaller ones. We can combine `withdraw` and `deposit` to arrive at the following definition of `transfer`:
 
 ```typescript
