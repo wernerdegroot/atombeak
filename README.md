@@ -52,7 +52,7 @@ function updateBankAccount(accountNumber: string, balance: number): UpdateBankAc
 }
 ```
 
-The reducer for `bankAccounts` might look like this:
+The reducer for `bankAccounts` looks like this:
 
 ```typescript
 function bankAccountsReducer(bankAccounts: BankAccount[] = [], action: Action): BankAccount[] {
@@ -74,7 +74,7 @@ function bankAccountsReducer(bankAccounts: BankAccount[] = [], action: Action): 
 }
 ```
 
-Here is how we might write the code for transfer (which might be a [thunk](https://github.com/reduxjs/redux-thunk)):
+Here is how we might write the code for transfer (which is a [thunk](https://github.com/reduxjs/redux-thunk)):
 
 ```typescript
 // Helper function to get balance from a given bank account:
@@ -88,7 +88,7 @@ function getBalanceFrom(storeState: StoreState, accountNumber: string) {
 const transfer = (fromAccountNumber: string, toAccountNumber: string, amount: number) => (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
   const state = getState()
   const fromBalance = getBalanceFrom(state, fromAccountNumber)
-  const toBalance = getBalanceTo(state, toAccountNumber)
+  const toBalance = getBalanceFrom(state, toAccountNumber)
   dispatch(updateBankAccount(fromAccountNumber, fromBalance - amount))
   dispatch(updateBankAccount(toAccountNumber, toBalance + amount))
 }
@@ -100,7 +100,7 @@ Let's assume (for illustrative purposes) that we need to wait a while between wi
 const transfer = (fromAccountNumber: string, toAccountNumber: string, amount: number) => (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
   const state = getState()
   const fromBalance = getBalanceFrom(state, fromAccountNumber)
-  const toBalance = getBalanceTo(state, toAccountNumber)
+  const toBalance = getBalanceFrom(state, toAccountNumber)
   dispatch(updateBankAccount(fromAccountNumber, fromBalance - amount))
   setTimeout(() => {
     dispatch(updateBankAccount(toAccountNumber, toBalance + amount))
